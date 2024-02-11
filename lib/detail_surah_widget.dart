@@ -15,7 +15,17 @@ class DetailSurahWidget extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(namaLatin),
+          title: Text(namaLatin, style: const TextStyle(color: Colors.white)),
+          backgroundColor: Colors.teal,
+          actions: [
+            BackButton(
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+            // Icon(Icons.arrow_back)
+          ],
         ),
         body: Center(
           child: FutureBuilder<DetailSurah>(
@@ -23,69 +33,12 @@ class DetailSurahWidget extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 return ListView.builder(
-                  itemCount: snapshot.data!.ayat.length ?? 0,
+                  itemCount: snapshot.data!.ayat.length,
                   itemBuilder: (context, index) {
                     var ayat = snapshot.data!.ayat[index];
                     var tileColor =
                         index % 2 == 0 ? Colors.white : Colors.grey[300];
-                    return ListTile(
-                      tileColor: tileColor,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      title: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(12.0),
-                                margin: const EdgeInsets.only(right: 12.0),
-                                // color: Colors.grey,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      colorFilter: ColorFilter.mode(
-                                        tileColor!,
-                                        BlendMode.modulate,
-                                      ),
-                                      image: const ExactAssetImage(
-                                          'assets/icons/ayat.png')),
-                                ),
-                                child: Text(
-                                  '${ayat.nomor}',
-                                  style: const TextStyle(
-                                    // color: ColorBase.primaryText,
-                                    fontSize: 10.0,
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  '${ayat.ar}',
-                                  textAlign: TextAlign.right,
-                                  style: const TextStyle(
-                                    fontFamily: 'LPMQ',
-                                    fontSize: 18.0,
-                                    // color: ColorBase.primaryText,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              'Artinya: ${ayat.idn}',
-                              textAlign: TextAlign.justify,
-                              style: const TextStyle(
-                                fontSize: 12.0,
-                                // color: ColorBase.primaryText,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    return buildDetailListTile(ayat, tileColor!);
                   },
                 );
               } else if (snapshot.hasError) {
@@ -95,6 +48,65 @@ class DetailSurahWidget extends StatelessWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildDetailListTile(DetailAyat ayat, Color tileColor) {
+    return ListTile(
+      tileColor: tileColor,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      title: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12.0),
+                margin: const EdgeInsets.only(right: 12.0),
+                // color: Colors.grey,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      colorFilter: ColorFilter.mode(
+                        tileColor,
+                        BlendMode.modulate,
+                      ),
+                      image: const ExactAssetImage('assets/icons/ayat.png')),
+                ),
+                child: Text(
+                  '${ayat.nomor}',
+                  style: const TextStyle(
+                    // color: ColorBase.primaryText,
+                    fontSize: 10.0,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  ayat.ar,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontFamily: 'LPMQ',
+                    fontSize: 18.0,
+                    // color: ColorBase.primaryText,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text(
+              'Artinya: ${ayat.idn}',
+              textAlign: TextAlign.justify,
+              style: const TextStyle(
+                fontSize: 12.0,
+                // color: ColorBase.primaryText,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
