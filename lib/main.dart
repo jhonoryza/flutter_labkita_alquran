@@ -192,7 +192,8 @@ class _MyAppState extends State<MyApp> {
                       ),
                       onPressed: () async {
                         SocialShare.copyToClipboard(
-                          text: "This is Social Share plugin",
+                          text:
+                              "https://play.google.com/store/apps/details?id=com.labkita.baca_alquran",
                         ).then((data) {
                           const snackBar = SnackBar(content: Text('Copied !!'));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
