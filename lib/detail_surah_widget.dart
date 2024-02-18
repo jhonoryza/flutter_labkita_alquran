@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_labkita_alquran/model/detail_surah.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -29,7 +31,7 @@ class DetailSurahWidget extends StatelessWidget {
         ),
         body: Center(
           child: FutureBuilder<DetailSurah>(
-            future: fetchDetailSurah(nomor),
+            future: fetchDetailOfflineSurah(nomor),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 return ListView.builder(
@@ -86,10 +88,10 @@ class DetailSurahWidget extends StatelessWidget {
                 child: Text(
                   ayat.ar,
                   textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontFamily: 'LPMQ',
-                    fontSize: 18.0,
-                    // color: ColorBase.primaryText,
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.scheherazadeNew().fontFamily,
+                    fontSize: 24.0,
+                    color: Colors.brown,
                   ),
                 ),
               ),
@@ -112,6 +114,7 @@ class DetailSurahWidget extends StatelessWidget {
   }
 }
 
+// unused since we used offline data
 Future<DetailSurah> fetchDetailSurah(int nomor) async {
   final url = Uri.parse("https://quran-api.santrikoding.com/api/surah/$nomor");
   final response = await http.get(url);
@@ -121,4 +124,12 @@ Future<DetailSurah> fetchDetailSurah(int nomor) async {
     return DetailSurah.fromJson(body);
   }
   throw Exception('Failed to load detail surah');
+}
+
+Future<DetailSurah> fetchDetailOfflineSurah(int nomor) async {
+  final file = await rootBundle.loadString('assets/json/quran-complete.json');
+
+  final body = json.decode(file);
+  (body as List).removeWhere((element) => element['number_of_surah'] != nomor);
+  return DetailSurah.fromOfflineJson(body[0], nomor);
 }

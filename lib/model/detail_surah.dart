@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -30,6 +31,23 @@ class DetailSurah {
       ),
     );
   }
+
+  factory DetailSurah.fromOfflineJson(
+    Map<String, dynamic> json,
+    int nomor,
+  ) {
+    return DetailSurah(
+      nomor: json['number_of_surah'],
+      namaLatin: json['name'],
+      nama: json['name_translations']['ar'],
+      jumlahAyat: json['number_of_ayah'],
+      ayat: List<dynamic>.from(
+        json['verses'].map(
+          (x) => DetailAyat.fromOfflineJson(x),
+        ),
+      ),
+    );
+  }
 }
 
 @immutable
@@ -46,5 +64,10 @@ class DetailAyat {
 
   factory DetailAyat.fromJson(Map<String, dynamic> json) {
     return DetailAyat(nomor: json['nomor'], ar: json['ar'], idn: json['idn']);
+  }
+
+  factory DetailAyat.fromOfflineJson(Map<String, dynamic> json) {
+    return DetailAyat(
+        nomor: json['number'], ar: json['text'], idn: json['translation_id']);
   }
 }

@@ -25,4 +25,14 @@ class Surah {
       arti: json['arti'],
     );
   }
+
+  factory Surah.fromOfflineJson(Map<String, dynamic> json) {
+    return Surah(
+      nomor: json['number_of_surah'],
+      namaLatin: json['name'],
+      nama: json['name_translations']['ar'],
+      jumlahAyat: json['number_of_ayah'],
+      arti: json['name_translations']['id'],
+    );
+  }
 }

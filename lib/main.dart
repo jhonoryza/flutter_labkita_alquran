@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_labkita_alquran/detail_surah_widget.dart';
 import 'dart:convert';
 import 'package:flutter_labkita_alquran/model/surah.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:social_share/social_share.dart';
@@ -41,10 +43,34 @@ class _MyAppState extends State<MyApp> {
     installerStore: 'Unknown',
   );
 
+  final _searchInput = TextEditingController();
+  String searchValue = '';
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    // _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
     _initPackageInfo();
+  }
+
+  void _onSearchChanged(input) {
+    setState(() {
+      searchValue = input;
+    });
+  }
+
+  void _clearSearchInput() {
+    setState(() {
+      searchValue = '';
+    });
+    _searchInput.clear();
   }
 
   Future<void> _initPackageInfo() async {
@@ -90,6 +116,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  // unused since we used offline data
   Future<List<dynamic>> fetchSurah() async {
     final url = Uri.parse("https://quran-api.santrikoding.com/api/surah");
     final response = await http.get(url);
@@ -102,30 +129,69 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<List<dynamic>> fetchOfflineSurah() async {
+    final file = await rootBundle.loadString('assets/json/quran-complete.json');
+    final body = json.decode(file);
+    final listSurah = body.map((data) => Surah.fromOfflineJson(data)).toList();
+    if (searchValue.isNotEmpty) {
+      var nomor = int.tryParse(searchValue);
+      if (nomor == null) {
+        listSurah.removeWhere((element) => !element.namaLatin
+            .toLowerCase()
+            .contains(searchValue.toLowerCase()));
+      } else {
+        listSurah.removeWhere((element) => !element.nomor
+            .toString()
+            .toLowerCase()
+            .contains(searchValue.toLowerCase()));
+      }
+    }
+    return listSurah;
+  }
+
   Widget buildListSurah() {
     return Scaffold(
       body: Center(
-        child: FutureBuilder<List<dynamic>>(
-          future: fetchSurah(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  var tileColor =
-                      index % 2 == 0 ? Colors.white : Colors.grey[300];
-                  var surah = snapshot.data![index];
+        child: Column(
+          children: [
+            TextField(
+              controller: _searchInput,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'cari nama / no surah',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: () => _clearSearchInput(),
+                  icon: Icon(searchValue.isNotEmpty ? Icons.clear : null),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: FutureBuilder<List<dynamic>>(
+                future: fetchOfflineSurah(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        var tileColor =
+                            index % 2 == 0 ? Colors.white : Colors.grey[300];
+                        var surah = snapshot.data![index];
 
-                  return buildListTile(surah, tileColor!);
+                        return buildListTile(surah, tileColor!);
+                      },
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('error : ${snapshot.error}');
+                  }
+
+                  // By default, show a loading spinner.
+                  return const CircularProgressIndicator();
                 },
-              );
-            } else if (snapshot.hasError) {
-              return Text('error : ${snapshot.error}');
-            }
-
-            // By default, show a loading spinner.
-            return const CircularProgressIndicator();
-          },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -268,11 +334,11 @@ class _MyAppState extends State<MyApp> {
                         fontSize: 14.0,
                       ),
                     ),
-                    Text('${surah.namaLatin}   ',
-                        style: const TextStyle(
-                          fontFamily: 'LPMQ',
+                    Text('${surah.nama}   ',
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.scheherazadeNew().fontFamily,
                           color: Colors.brown,
-                          fontSize: 14.0,
+                          fontSize: 18.0,
                         ))
                   ],
                 ),
