@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter_labkita_alquran/model/surah.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:social_share/social_share.dart';
 
@@ -46,6 +47,27 @@ class _MyAppState extends State<MyApp> {
   final _searchInput = TextEditingController();
   String searchValue = '';
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      InAppUpdate.performImmediateUpdate().catchError((e) {
+        showSnack(e.toString());
+        return AppUpdateResult.inAppUpdateFailed;
+      });
+    }).catchError((e) {
+      showSnack(e.toString());
+    });
+  }
+
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -58,6 +80,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initPackageInfo();
+    checkForUpdate();
   }
 
   void _onSearchChanged(input) {
@@ -167,27 +190,29 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
             Expanded(
-              flex: 1,
               child: FutureBuilder<List<dynamic>>(
                 future: fetchOfflineSurah(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        var tileColor =
-                            index % 2 == 0 ? Colors.white : Colors.grey[300];
-                        var surah = snapshot.data![index];
+                  List<dynamic> datas = snapshot.data ?? [];
+                  return ListView.builder(
+                    itemCount: datas.length,
+                    itemBuilder: (context, index) {
+                      // if (datas.isEmpty) {
+                      //   return Container(
+                      //     height: 20,
+                      //     child: const CircularProgressIndicator(),
+                      //   );
+                      // }
+                      if (snapshot.hasError) {
+                        showSnack(snapshot.error.toString());
+                      }
+                      var tileColor =
+                          index % 2 == 0 ? Colors.white : Colors.grey[300];
+                      var surah = snapshot.data![index];
 
-                        return buildListTile(surah, tileColor!);
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('error : ${snapshot.error}');
-                  }
-
-                  // By default, show a loading spinner.
-                  return const CircularProgressIndicator();
+                      return buildListTile(surah, tileColor!);
+                    },
+                  );
                 },
               ),
             ),
