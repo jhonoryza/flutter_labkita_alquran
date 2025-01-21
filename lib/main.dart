@@ -6,8 +6,9 @@ import 'package:flutter_labkita_alquran/model/surah.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:in_app_update/in_app_update.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:social_share/social_share.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const NavigationBarApp());
@@ -34,6 +35,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
+
+  String? _result;
+
+  void setResult(String? result) {
+    setState(() => _result = result);
+  }
+
+  final MobileScannerController controller = MobileScannerController();
 
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -80,7 +89,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initPackageInfo();
-    checkForUpdate();
+    //checkForUpdate();
   }
 
   void _onSearchChanged(input) {
@@ -109,7 +118,7 @@ class _MyAppState extends State<MyApp> {
     const String appTitle = 'Alquran Indonesia';
     return MaterialApp(
       title: appTitle,
-      home: buildWithTabNavigation(appTitle, theme),
+      home: buildWithBottomNavigation(appTitle, theme),
     );
   }
 
@@ -259,61 +268,14 @@ class _MyAppState extends State<MyApp> {
                       'Ini adalah aplikasi alquran dan terjemahan indonesia, jika didapat kekurangan mohon dimaklumi. \n\nUntuk saran dan masukan boleh disampaikan melalui email jardik.oryza@gmail.com, \n\nSupport developer dengan share, terima kasih',
                       textAlign: TextAlign.left,
                     ),
-                    Container(height: 20),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.blue),
-                      ),
-                      onPressed: () async {
-                        SocialShare.shareTwitter(
-                          "Download Alquran terjemahan indonesia, gratis tanpa iklan.",
-                          hashtags: ["Alquran", "Islam"],
-                          url:
-                              "https://play.google.com/store/apps/details?id=com.labkita.baca_alquran",
-                        );
-                      },
-                      child: const Text(
-                        "Share Twitter",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.grey),
-                      ),
-                      onPressed: () async {
-                        SocialShare.copyToClipboard(
-                          text:
-                              "https://play.google.com/store/apps/details?id=com.labkita.baca_alquran",
-                        ).then((data) {
-                          const snackBar = SnackBar(content: Text('Copied !!'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        });
-                      },
-                      child: const Text(
-                        "Copy Link Aplikasi",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.teal),
-                      ),
-                      onPressed: () {
-                        //go to home
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        ' Kembali',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    Container(height: 20),
                   ],
                 ),
                 const Text(
                   'copyright @labkita februari 2024',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -403,6 +365,7 @@ class _MyAppState extends State<MyApp> {
       bottomNavigationBar: buildBottomNavigationBar(),
       body: <Widget>[
         buildListSurah(),
+        buildScanner(),
         buildAboutCard(theme),
       ][currentPageIndex],
     );
@@ -415,12 +378,58 @@ class _MyAppState extends State<MyApp> {
           currentPageIndex = index;
         });
       },
-      indicatorColor: Colors.teal,
+      backgroundColor: Colors.white,
+      height: 60,
+      indicatorColor: Colors.white,
       selectedIndex: currentPageIndex,
       destinations: const <Widget>[
-        Icon(Icons.home_outlined),
-        Icon(Icons.info),
+        NavigationDestination(
+            icon: Icon(Icons.home_outlined, color: Colors.teal), label: 'Home'),
+        NavigationDestination(
+            icon: Icon(Icons.scanner, color: Colors.teal), label: 'QR Scan'),
+        NavigationDestination(
+            icon: Icon(Icons.info, color: Colors.teal), label: 'About'),
       ],
+    );
+  }
+
+  Future<void> _launchURL() async {
+    try {
+      await launchUrl(Uri.parse(_result ?? ''));
+    } on PlatformException catch (e) {
+      debugPrint("Failed to open URL: '${e.message}'.");
+    }
+  }
+
+  Widget buildScanner() {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+            child: MobileScanner(
+              controller: controller,
+              onDetect: (BarcodeCapture capture) async {
+                final List<Barcode> barcodes = capture.barcodes;
+                final barcode = barcodes.first;
+                if (barcode.rawValue != null) {
+                  setResult(barcode.rawValue);
+                }
+              },
+            ),
+          ),
+          Center(
+              heightFactor: 3,
+              child: GestureDetector(
+                onTap: _launchURL,
+                child: Text(
+                  _result ?? 'No result',
+                  style: const TextStyle(
+                      color: Colors.indigoAccent,
+                      decoration: TextDecoration.underline),
+                ),
+              )),
+        ],
+      ),
     );
   }
 }

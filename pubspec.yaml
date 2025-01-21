@@ -38,9 +38,10 @@ dependencies:
   meta: ^1.10.0
   http: ^1.2.0
   package_info_plus: ^5.0.1
-  social_share: ^2.3.1
   google_fonts: ^6.1.0
   in_app_update: ^4.2.2
+  mobile_scanner: 4.0.1
+  url_launcher: ^6.1.7
 
 dev_dependencies:
   flutter_test:
