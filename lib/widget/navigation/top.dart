@@ -20,10 +20,7 @@ class UseTopNavigation extends MyAppState {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BuildAboutApp(
-                      packageInfo: packageInfo,
-                      theme: theme,
-                    ),
+                    builder: (context) => const BuildAboutApp(),
                   ),
                 );
               },

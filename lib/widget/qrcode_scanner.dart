@@ -49,16 +49,18 @@ class _BuildScannerState extends State<BuildScanner> {
           ),
           Center(
             heightFactor: 3,
-            child: GestureDetector(
-              onTap: _launchURL,
-              child: Text(
-                url ?? 'No result',
-                style: const TextStyle(
-                  color: Colors.indigoAccent,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
+            child: (url == null || url == '')
+                ? const Text('No result')
+                : GestureDetector(
+                    onTap: _launchURL,
+                    child: Text(
+                      url ?? '',
+                      style: const TextStyle(
+                        color: Colors.indigoAccent,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),

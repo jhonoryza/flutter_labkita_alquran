@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-import 'package:flutter_labkita_alquran/widget/qibla_compass_custom_painter.dart';
+import 'package:flutter_labkita_alquran/widget/qibla_compass_painter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
