@@ -5,19 +5,30 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class DetailSurahWidget extends StatelessWidget {
-  const DetailSurahWidget(
-      {super.key, required this.nomor, required this.namaLatin});
-
+class BuildSurahDetail extends StatefulWidget {
   final int nomor;
   final String namaLatin;
 
+  const BuildSurahDetail({
+    super.key,
+    required this.nomor,
+    required this.namaLatin,
+  });
+
+  @override
+  State<StatefulWidget> createState() {
+    return _BuildSurahDetailState();
+  }
+}
+
+class _BuildSurahDetailState extends State<BuildSurahDetail> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(namaLatin, style: const TextStyle(color: Colors.white)),
+          title: Text(widget.namaLatin,
+              style: const TextStyle(color: Colors.white)),
           backgroundColor: Colors.teal,
           actions: [
             BackButton(
@@ -31,7 +42,7 @@ class DetailSurahWidget extends StatelessWidget {
         ),
         body: Center(
           child: FutureBuilder<DetailSurah>(
-            future: fetchDetailOfflineSurah(nomor),
+            future: fetchDetailOfflineSurah(widget.nomor),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 return ListView.builder(
