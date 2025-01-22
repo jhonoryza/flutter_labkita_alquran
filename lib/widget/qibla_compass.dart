@@ -20,10 +20,6 @@ class BuildQiblaCompass extends StatefulWidget {
 class _BuildQiblaCompassState extends State<BuildQiblaCompass> {
   double? qiblaDegrees;
 
-  void setQiblaDegrees(double qiblaDegrees) {
-    setState(() => qiblaDegrees = qiblaDegrees);
-  }
-
   // Lokasi Ka'bah (Mekah)
   static const double kaabaLatitude = 21.4225;
   static const double kaabaLongitude = 39.8262;
@@ -48,21 +44,43 @@ class _BuildQiblaCompassState extends State<BuildQiblaCompass> {
       double x = cos(latitude1) * sin(latitude2) -
           sin(latitude1) * cos(latitude2) * cos(deltaLongitude);
 
-      double qiblaDegrees = atan2(y, x).toDegrees();
+      double degree = atan2(y, x).toDegrees();
 
-      if (qiblaDegrees < 0) qiblaDegrees += 360;
+      if (degree < 0) degree += 360;
 
-      setQiblaDegrees(qiblaDegrees);
+      setState(() {
+        qiblaDegrees = degree;
+      });
     } catch (e) {
       debugPrint("Error calculating Qibla direction: $e");
     }
   }
 
+  Future<void> requestLocationPermission() async {
+    PermissionStatus status = await Permission.location.request();
+
+    if (status.isGranted) {
+      debugPrint("Location permission granted");
+      // Lanjutkan untuk mengakses lokasi
+    } else if (status.isDenied) {
+      debugPrint("Location permission denied");
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings(); // Minta pengguna untuk membuka pengaturan dan memberikan izin
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    requestLocationPermission();
+    _getQiblaDirection();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _getQiblaDirection();
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.black87,
       body: Center(
         child: StreamBuilder<CompassEvent>(
           stream: FlutterCompass.events,
@@ -71,61 +89,70 @@ class _BuildQiblaCompassState extends State<BuildQiblaCompass> {
               return const CircularProgressIndicator();
             }
 
-            if (snapshot.hasError ||
-                snapshot.data == null ||
-                qiblaDegrees == null) {
-              return const Text("Tidak dapat membaca sensor kompas.");
-            }
-
             // Ambil heading dari CompassEvent
             double? heading = snapshot.data!.heading;
 
-            if (heading == null) {
-              return const Text("Sensor kompas tidak tersedia.");
+            if (!snapshot.hasData || heading == null || heading.isNaN) {
+              return const Text(
+                'data kompas tidak valid',
+                style: TextStyle(color: Colors.white),
+              );
             }
-            double direction = heading;
-            // double direction = qiblaDegrees! - heading;
 
-            // double direction = (qiblaDegrees! - heading) % 360;
-            // if (direction < 0) {
-            //   direction += 360; // Pastikan arah selalu positif
-            // }
-            // debugPrint('qibla ' + qiblaDegrees.toString());
-            // debugPrint('compass ' + heading.toString());
-            // debugPrint('direction ' + direction.toString());
+            if (qiblaDegrees == null) {
+              return const Text(
+                "data gps tidak valid.",
+                style: TextStyle(color: Colors.white),
+              );
+            }
+
+            double compassAngle = heading * (pi / 180) * -1;
+            double qiblaAngle = heading - qiblaDegrees!;
+            double qiblaAngleNorm = qiblaAngle % 360;
 
             return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  "Qibla",
-                  style: TextStyle(
+                const SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  "KA'BAH ${qiblaAngleNorm.ceil().abs()}°",
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 Expanded(
-                  child: SizedBox(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CustomPaint(
-                          size: size,
-                          painter: CompassCustomPainter(
-                            angle: direction,
-                          ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Transform.rotate(
+                        angle: compassAngle,
+                        child: Image.asset(
+                          "assets/images/compass2.png",
+                          scale: 1,
                         ),
-                        Text(
-                          buildHeadingFirstLetter(direction),
-                          style: TextStyle(
-                            color: Colors.grey[700]!,
-                            fontSize: 82,
-                            // fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      CustomPaint(
+                        size: MediaQuery.of(context).size,
+                        painter: CompassCustomPainter(
+                          angle: qiblaAngle,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
+                Text(
+                  "KA'BAH ${qiblaDegrees!.ceil().abs()}° dari Utara",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(
+                  height: 100,
                 )
               ],
             );
@@ -134,20 +161,6 @@ class _BuildQiblaCompassState extends State<BuildQiblaCompass> {
       ),
     );
   }
-
-  String buildHeadingFirstLetter(double direction) {
-    if (direction > 315 && direction < 45) {
-      return 'N';
-    } else if (direction > 45 && direction < 135) {
-      return 'E';
-    } else if (direction > 135 && direction < 225) {
-      return 'S';
-    } else if (direction > 225 && direction < 315) {
-      return 'W';
-    }
-
-    return 'N';
-  }
 }
 
 // Extension untuk konversi derajat <-> radian
@@ -155,17 +168,4 @@ extension AngleConverter on double {
   double toRadians() => this * pi / 180;
 
   double toDegrees() => this * 180 / pi;
-}
-
-Future<void> requestLocationPermission() async {
-  PermissionStatus status = await Permission.location.request();
-
-  if (status.isGranted) {
-    debugPrint("Location permission granted");
-    // Lanjutkan untuk mengakses lokasi
-  } else if (status.isDenied) {
-    debugPrint("Location permission denied");
-  } else if (status.isPermanentlyDenied) {
-    openAppSettings(); // Minta pengguna untuk membuka pengaturan dan memberikan izin
-  }
 }

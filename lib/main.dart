@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_labkita_alquran/helper.dart';
 import 'package:flutter_labkita_alquran/widget/navigation/bottom.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const NavigationBarApp());
@@ -50,7 +51,13 @@ class MyAppState extends State<MyApp> {
   }
 
   @override
-  void dispose() {
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     super.dispose();
   }
 
@@ -58,6 +65,9 @@ class MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     //checkForUpdate();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
   }
 
   @override
