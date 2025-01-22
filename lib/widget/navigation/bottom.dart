@@ -1,30 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_labkita_alquran/main.dart';
+import 'package:flutter_labkita_alquran/helper.dart';
 import 'package:flutter_labkita_alquran/widget/about_app.dart';
 import 'package:flutter_labkita_alquran/widget/qibla_compass.dart';
 import 'package:flutter_labkita_alquran/widget/qrcode_scanner.dart';
 import 'package:flutter_labkita_alquran/widget/surah_list.dart';
 
-class UseBottomNavigation extends MyAppState {
-  Widget create(String appTitle, ThemeData theme) {
+class UseBottomNavigation extends StatefulWidget {
+  const UseBottomNavigation({
+    super.key,
+  });
+
+  @override
+  State<StatefulWidget> createState() {
+    return _UseBottomNavigationState();
+  }
+}
+
+class _UseBottomNavigationState extends State<UseBottomNavigation> {
+  int currentPageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           appTitle,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.teal,
       ),
       bottomNavigationBar: createBar(),
-      body: <Widget>[
-        BuildSurahList(
-          showSnack: showSnack,
-        ),
-        const BuildQiblaCompass(),
-        const BuildScanner(),
-        const BuildAboutApp(),
-      ][currentPageIndex],
+      body: _buildPage(currentPageIndex),
     );
+  }
+
+  Widget _buildPage(int index) {
+    switch (index) {
+      case 0:
+        return BuildSurahList(
+          showSnack: (String message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+          },
+        );
+      case 1:
+        return const BuildQiblaCompass();
+      case 2:
+        return const BuildScanner();
+      case 3:
+        return const BuildAboutApp();
+      default:
+        return const Center(child: Text('Page not found'));
+    }
   }
 
   Widget createBar() {
@@ -37,7 +65,6 @@ class UseBottomNavigation extends MyAppState {
       backgroundColor: Colors.white,
       height: 60,
       indicatorColor: Colors.white,
-      selectedIndex: currentPageIndex,
       destinations: const <Widget>[
         NavigationDestination(
           icon: Icon(

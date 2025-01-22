@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_labkita_alquran/helper.dart';
 import 'package:flutter_labkita_alquran/widget/navigation/bottom.dart';
-import 'package:flutter_labkita_alquran/widget/qibla_compass.dart';
 import 'package:in_app_update/in_app_update.dart';
 
 void main() {
@@ -27,9 +27,6 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  // navigation index
-  int currentPageIndex = 0;
-
   // check in app update
   Future<void> checkForUpdate() async {
     InAppUpdate.checkForUpdate().then((info) {
@@ -61,19 +58,13 @@ class MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     //checkForUpdate();
-    requestLocationPermission();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    const String appTitle = 'Alquran Indonesia';
-    return MaterialApp(
+    return const MaterialApp(
       title: appTitle,
-      home: UseBottomNavigation().create(
-        appTitle,
-        theme,
-      ),
+      home: UseBottomNavigation(),
     );
   }
 }
