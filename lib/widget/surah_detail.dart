@@ -50,7 +50,7 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
                   itemBuilder: (context, index) {
                     var ayat = snapshot.data!.ayat[index];
                     var tileColor =
-                        index % 2 == 0 ? Colors.white : Colors.grey[300];
+                        index % 2 == 0 ? Colors.black87 : Colors.black87;
                     return buildDetailListTile(ayat, tileColor!);
                   },
                 );
@@ -78,19 +78,19 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
                 padding: const EdgeInsets.all(12.0),
                 margin: const EdgeInsets.only(right: 12.0),
                 // color: Colors.grey,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       colorFilter: ColorFilter.mode(
-                        tileColor,
+                        Colors.white70,
                         BlendMode.modulate,
                       ),
-                      image: const ExactAssetImage('assets/icons/ayat.png')),
+                      image: ExactAssetImage('assets/icons/ayat.png')),
                 ),
                 child: Text(
                   '${ayat.nomor}',
                   style: const TextStyle(
-                    // color: ColorBase.primaryText,
+                    // color: Colors.white70,
                     fontSize: 10.0,
                   ),
                 ),
@@ -102,7 +102,7 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
                   style: TextStyle(
                     fontFamily: GoogleFonts.scheherazadeNew().fontFamily,
                     fontSize: 24.0,
-                    color: Colors.brown,
+                    color: Colors.white70,
                   ),
                 ),
               ),
@@ -115,7 +115,7 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
               textAlign: TextAlign.justify,
               style: const TextStyle(
                 fontSize: 12.0,
-                // color: ColorBase.primaryText,
+                color: Colors.white70,
               ),
             ),
           ),

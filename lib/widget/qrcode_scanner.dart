@@ -18,10 +18,6 @@ class _BuildScannerState extends State<BuildScanner> {
   final MobileScannerController controller = MobileScannerController();
   String? url;
 
-  void setUrl(String? url) {
-    setState(() => url = url);
-  }
-
   Future<void> _launchURL() async {
     try {
       await launchUrl(Uri.parse(url ?? ''));
@@ -42,7 +38,7 @@ class _BuildScannerState extends State<BuildScanner> {
                 final List<Barcode> barcodes = capture.barcodes;
                 final barcode = barcodes.first;
                 if (barcode.rawValue != null) {
-                  setUrl(barcode.rawValue);
+                  setState(() => url = barcode.rawValue);
                 }
               },
             ),
@@ -50,7 +46,7 @@ class _BuildScannerState extends State<BuildScanner> {
           Center(
             heightFactor: 3,
             child: (url == null || url == '')
-                ? const Text('No result')
+                ? const Text('Scan QR Code')
                 : GestureDetector(
                     onTap: _launchURL,
                     child: Text(

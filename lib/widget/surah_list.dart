@@ -71,18 +71,31 @@ class _BuildSuratListState extends State<BuildSurahList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black87,
       body: Center(
         child: Column(
           children: [
             TextField(
               controller: searchInput,
               onChanged: onSearchChanged,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
+                // filled: true,
+                // fillColor: Colors.black87,
+                focusColor: Colors.white70,
+                border: InputBorder.none,
                 hintText: 'cari nama / no surah',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: const TextStyle(color: Colors.white70),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Colors.white70,
+                ),
                 suffixIcon: IconButton(
                   onPressed: () => clearSearchInput(),
-                  icon: Icon(searchValue.isNotEmpty ? Icons.clear : null),
+                  icon: Icon(
+                    searchValue.isNotEmpty ? Icons.clear : null,
+                    color: Colors.white70,
+                  ),
                 ),
               ),
             ),
@@ -104,13 +117,13 @@ class _BuildSuratListState extends State<BuildSurahList> {
                         widget.showSnack(snapshot.error.toString());
                       }
                       var tileColor =
-                          index % 2 == 0 ? Colors.white : Colors.grey[300];
+                          index % 2 == 0 ? Colors.black87 : Colors.black87;
                       var surah = snapshot.data![index];
 
                       return buildListTile(
                         context,
                         surah,
-                        tileColor!,
+                        tileColor,
                       );
                     },
                   );
@@ -125,7 +138,7 @@ class _BuildSuratListState extends State<BuildSurahList> {
 
   Widget buildListTile(BuildContext context, Surah surah, Color tileColor) {
     return ListTile(
-      tileColor: tileColor,
+      // tileColor: tileColor,
       contentPadding:
           const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 0),
       title: Row(
@@ -138,7 +151,7 @@ class _BuildSuratListState extends State<BuildSurahList> {
                 shape: BoxShape.circle,
                 image: DecorationImage(
                   colorFilter: ColorFilter.mode(
-                    Colors.brown,
+                    Colors.black87,
                     BlendMode.color,
                   ),
                   image: ExactAssetImage('assets/icons/ayat.png'),
@@ -160,12 +173,13 @@ class _BuildSuratListState extends State<BuildSurahList> {
                       '  ${surah.namaLatin}',
                       style: const TextStyle(
                         fontSize: 14.0,
+                        color: Colors.white70,
                       ),
                     ),
                     Text('${surah.nama}   ',
                         style: TextStyle(
                           fontFamily: GoogleFonts.scheherazadeNew().fontFamily,
-                          color: Colors.brown,
+                          color: Colors.white70,
                           fontSize: 18.0,
                         ))
                   ],
@@ -176,6 +190,7 @@ class _BuildSuratListState extends State<BuildSurahList> {
                     '  ${surah.jumlahAyat} Ayat | Arti: ${surah.arti}',
                     style: const TextStyle(
                       fontSize: 12.0,
+                      color: Colors.white70,
                     ),
                   ),
                 ),
