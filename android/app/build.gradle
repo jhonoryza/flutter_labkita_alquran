@@ -30,7 +30,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "id.my.labkita.alquran.flutter_labkita_alquran"
-    compileSdkVersion flutter.compileSdkVersion
+    //compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {

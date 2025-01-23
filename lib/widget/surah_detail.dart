@@ -5,19 +5,30 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class DetailSurahWidget extends StatelessWidget {
-  const DetailSurahWidget(
-      {super.key, required this.nomor, required this.namaLatin});
-
+class BuildSurahDetail extends StatefulWidget {
   final int nomor;
   final String namaLatin;
 
+  const BuildSurahDetail({
+    super.key,
+    required this.nomor,
+    required this.namaLatin,
+  });
+
+  @override
+  State<StatefulWidget> createState() {
+    return _BuildSurahDetailState();
+  }
+}
+
+class _BuildSurahDetailState extends State<BuildSurahDetail> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(namaLatin, style: const TextStyle(color: Colors.white)),
+          title: Text(widget.namaLatin,
+              style: const TextStyle(color: Colors.white)),
           backgroundColor: Colors.teal,
           actions: [
             BackButton(
@@ -31,7 +42,7 @@ class DetailSurahWidget extends StatelessWidget {
         ),
         body: Center(
           child: FutureBuilder<DetailSurah>(
-            future: fetchDetailOfflineSurah(nomor),
+            future: fetchDetailOfflineSurah(widget.nomor),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 return ListView.builder(
@@ -39,7 +50,7 @@ class DetailSurahWidget extends StatelessWidget {
                   itemBuilder: (context, index) {
                     var ayat = snapshot.data!.ayat[index];
                     var tileColor =
-                        index % 2 == 0 ? Colors.white : Colors.grey[300];
+                        index % 2 == 0 ? Colors.black87 : Colors.black87;
                     return buildDetailListTile(ayat, tileColor!);
                   },
                 );
@@ -67,19 +78,19 @@ class DetailSurahWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(12.0),
                 margin: const EdgeInsets.only(right: 12.0),
                 // color: Colors.grey,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       colorFilter: ColorFilter.mode(
-                        tileColor,
+                        Colors.white70,
                         BlendMode.modulate,
                       ),
-                      image: const ExactAssetImage('assets/icons/ayat.png')),
+                      image: ExactAssetImage('assets/icons/ayat.png')),
                 ),
                 child: Text(
                   '${ayat.nomor}',
                   style: const TextStyle(
-                    // color: ColorBase.primaryText,
+                    // color: Colors.white70,
                     fontSize: 10.0,
                   ),
                 ),
@@ -91,7 +102,7 @@ class DetailSurahWidget extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: GoogleFonts.scheherazadeNew().fontFamily,
                     fontSize: 24.0,
-                    color: Colors.brown,
+                    color: Colors.white70,
                   ),
                 ),
               ),
@@ -104,7 +115,7 @@ class DetailSurahWidget extends StatelessWidget {
               textAlign: TextAlign.justify,
               style: const TextStyle(
                 fontSize: 12.0,
-                // color: ColorBase.primaryText,
+                color: Colors.white70,
               ),
             ),
           ),
