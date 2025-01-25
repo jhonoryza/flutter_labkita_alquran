@@ -4,6 +4,7 @@ import 'package:flutter_labkita_alquran/widget/about_app.dart';
 import 'package:flutter_labkita_alquran/widget/qibla_compass.dart';
 import 'package:flutter_labkita_alquran/widget/qrcode_scanner.dart';
 import 'package:flutter_labkita_alquran/widget/surah_list.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class UseBottomNavigation extends StatefulWidget {
   const UseBottomNavigation({
@@ -23,27 +24,34 @@ class _UseBottomNavigationState extends State<UseBottomNavigation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           appTitle,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: GoogleFonts.quicksand().fontFamily,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.teal,
       ),
       bottomNavigationBar: createBar(),
-      body: _buildPage(currentPageIndex),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        child: _buildPage(currentPageIndex),
+      ),
     );
   }
 
   Widget _buildPage(int index) {
     switch (index) {
       case 0:
-        return BuildSurahList(
-          showSnack: (String message) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
-          },
-        );
+        return const BuildSurahList();
       case 1:
         return const BuildQiblaCompass();
       case 2:

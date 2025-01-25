@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 //import 'package:smooth_compass_plus/utils/src/compass_ui.dart';
 
 Widget smoothCompas() {
-  return Scaffold(
+  return const Scaffold(
       // body: SmoothCompassWidget(
       //   rotationSpeed: 200,
       //   height: 300,

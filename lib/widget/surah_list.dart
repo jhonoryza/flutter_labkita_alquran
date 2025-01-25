@@ -7,9 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class BuildSurahList extends StatefulWidget {
-  final Function(String) showSnack;
-
-  const BuildSurahList({super.key, required this.showSnack});
+  const BuildSurahList({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -85,7 +83,11 @@ class _BuildSuratListState extends State<BuildSurahList> {
                 focusColor: Colors.white70,
                 border: InputBorder.none,
                 hintText: 'cari nama / no surah',
-                hintStyle: const TextStyle(color: Colors.white70),
+                hintStyle: TextStyle(
+                  color: Colors.white70,
+                  fontFamily: GoogleFonts.quicksand().fontFamily,
+                  fontWeight: FontWeight.bold,
+                ),
                 prefixIcon: const Icon(
                   Icons.search,
                   color: Colors.white70,
@@ -107,14 +109,8 @@ class _BuildSuratListState extends State<BuildSurahList> {
                   return ListView.builder(
                     itemCount: datas.length,
                     itemBuilder: (context, index) {
-                      // if (datas.isEmpty) {
-                      //   return Container(
-                      //     height: 20,
-                      //     child: const CircularProgressIndicator(),
-                      //   );
-                      // }
                       if (snapshot.hasError) {
-                        widget.showSnack(snapshot.error.toString());
+                        return spinnerLoading(snapshot.error.toString());
                       }
                       var tileColor =
                           index % 2 == 0 ? Colors.black87 : Colors.black87;
@@ -171,9 +167,11 @@ class _BuildSuratListState extends State<BuildSurahList> {
                   children: [
                     Text(
                       '  ${surah.namaLatin}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.white70,
+                        fontFamily: GoogleFonts.quicksand().fontFamily,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text('${surah.nama}   ',
@@ -188,9 +186,11 @@ class _BuildSuratListState extends State<BuildSurahList> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     '  ${surah.jumlahAyat} Ayat | Arti: ${surah.arti}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12.0,
                       color: Colors.white70,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -201,11 +201,42 @@ class _BuildSuratListState extends State<BuildSurahList> {
       ),
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => BuildSurahDetail(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              BuildSurahDetail(
             nomor: surah.nomor,
             namaLatin: surah.namaLatin,
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration:
+              const Duration(milliseconds: 300), // Durasi animasi
+        ),
+      ),
+    );
+  }
+
+  Widget spinnerLoading(String message) {
+    return Scaffold(
+      backgroundColor: Colors.black87,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(
+              height: 30,
+            ),
+            Text(
+              message,
+              style: const TextStyle(color: Colors.white),
+            )
+          ],
         ),
       ),
     );

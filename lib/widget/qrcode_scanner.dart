@@ -18,11 +18,17 @@ class _BuildScannerState extends State<BuildScanner> {
   final MobileScannerController controller = MobileScannerController();
   String? url;
 
-  Future<void> _launchURL() async {
+  Future<void> _launchURL(BuildContext context) async {
     try {
       await launchUrl(Uri.parse(url ?? ''));
     } on PlatformException catch (e) {
-      debugPrint("Failed to open URL: '${e.message}'.");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Gagal membuka URL: '${e.message}'."),
+          ),
+        );
+      }
     }
   }
 
@@ -48,7 +54,7 @@ class _BuildScannerState extends State<BuildScanner> {
             child: (url == null || url == '')
                 ? const Text('Scan QR Code')
                 : GestureDetector(
-                    onTap: _launchURL,
+                    onTap: () => _launchURL(context),
                     child: Text(
                       url ?? '',
                       style: const TextStyle(

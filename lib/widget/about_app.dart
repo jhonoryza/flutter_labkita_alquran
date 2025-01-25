@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BuildAboutApp extends StatefulWidget {
   const BuildAboutApp({
@@ -62,43 +63,52 @@ class _BuildAboutAppState extends State<BuildAboutApp> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(height: 80),
-                  const Text(
-                    'Alquran Indonesia',
+                  Text(
+                    'Alquran',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
                     ),
                   ),
                   Text(
                     'Versi: ${packageInfo.version}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       color: Colors.white,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   Text(
                     'build number: ${packageInfo.buildNumber}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   Container(height: 20),
-                  const Text(
+                  Text(
                     'Ini adalah aplikasi alquran dan terjemahan indonesia, jika ada kekurangan mohon dimaklumi. ',
                     textAlign: TextAlign.left,
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   Container(height: 20),
                   RichText(
                     text: TextSpan(
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
+                        fontFamily: GoogleFonts.quicksand().fontFamily,
+                        fontWeight: FontWeight.w700,
                       ),
                       children: [
                         const TextSpan(
@@ -120,8 +130,10 @@ class _BuildAboutAppState extends State<BuildAboutApp> {
                   Container(height: 20),
                   RichText(
                     text: TextSpan(
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
+                        fontFamily: GoogleFonts.quicksand().fontFamily,
+                        fontWeight: FontWeight.w700,
                       ),
                       children: [
                         const TextSpan(
@@ -139,32 +151,44 @@ class _BuildAboutAppState extends State<BuildAboutApp> {
                                 await Clipboard.setData(
                                   const ClipboardData(text: appLink),
                                 );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Link disalin ke clipboard!'),
-                                  ),
-                                );
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                          Text('Link disalin ke clipboard!'),
+                                    ),
+                                  );
+                                }
                               }),
-                        const TextSpan(text: ' ini.'),
+                        TextSpan(
+                          text: ' ini.',
+                          style: TextStyle(
+                            fontFamily: GoogleFonts.quicksand().fontFamily,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   Container(height: 20),
-                  const Text(
+                  Text(
                     'Hatur Nuhun, 🙏',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   Container(
                     height: 100,
                   ),
-                  const Text(
-                    'copyright @labkita februari 2024',
+                  Text(
+                    "©labkita 2020-${DateTime.now().year.toString()} All rights reserved",
                     style: TextStyle(
-                      fontWeight: FontWeight.normal,
+                      fontWeight: FontWeight.bold,
                       fontSize: 14,
                       color: Colors.white,
+                      fontFamily: GoogleFonts.quicksand().fontFamily,
                     ),
                   ),
                 ],

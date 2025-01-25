@@ -26,6 +26,7 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.white10,
         appBar: AppBar(
           title: Text(widget.namaLatin,
               style: const TextStyle(color: Colors.white)),
@@ -49,9 +50,10 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
                   itemCount: snapshot.data!.ayat.length,
                   itemBuilder: (context, index) {
                     var ayat = snapshot.data!.ayat[index];
-                    var tileColor =
-                        index % 2 == 0 ? Colors.black87 : Colors.black87;
-                    return buildDetailListTile(ayat, tileColor!);
+                    var tileColor = index % 2 == 0
+                        ? Colors.transparent
+                        : Colors.transparent;
+                    return buildDetailListTile(ayat, tileColor);
                   },
                 );
               } else if (snapshot.hasError) {
@@ -113,10 +115,11 @@ class _BuildSurahDetailState extends State<BuildSurahDetail> {
             child: Text(
               'Artinya: ${ayat.idn}',
               textAlign: TextAlign.justify,
-              style: const TextStyle(
-                fontSize: 12.0,
-                color: Colors.white70,
-              ),
+              style: TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.white70,
+                  fontFamily: GoogleFonts.quicksand().fontFamily,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ],

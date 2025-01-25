@@ -31,9 +31,7 @@ class UseTopNavigation extends MyAppState {
             ),
           ],
         ),
-        body: BuildSurahList(
-          showSnack: showSnack,
-        ),
+        body: const BuildSurahList(),
       ),
     );
   }
